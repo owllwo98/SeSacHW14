@@ -42,12 +42,20 @@ extension Date {
         return dateString
     }
     
-    static func toDateDayString() -> String {
+    func toDateBeforeString() -> String {
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone(abbreviation: "KST")
         formatter.dateFormat = "yyyyMMdd"
         let yesterDay = Calendar.current.date(byAdding: .day, value: -1, to: Date())
         let dateString = formatter.string(from: yesterDay!)
+        return dateString
+    }
+    
+    func toDateString() -> String {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(abbreviation: "KST")
+        formatter.dateFormat = "yyyyMMdd"
+        let dateString = formatter.string(from: self)
         return dateString
     }
     
@@ -63,7 +71,7 @@ extension Date {
 extension String {
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        formatter.dateFormat = "yyyyMMdd"
         formatter.timeZone = TimeZone(identifier: "KST")
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter

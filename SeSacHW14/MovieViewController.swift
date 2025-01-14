@@ -22,7 +22,8 @@ class MovieViewController: UIViewController {
     var movieNm: [String] = []
     var openDt: [String] = []
     
-    let date: Date = Date()
+    var date: Date = Date()
+    var didChanged: Bool = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +36,7 @@ class MovieViewController: UIViewController {
         tableView.delegate = self
         tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: "MovieTableViewCell")
         
+        textField.delegate = self
         configure()
         configureUI()
         configureTextField(textField)
@@ -43,12 +45,16 @@ class MovieViewController: UIViewController {
     
     func configure() {
         textField.backgroundColor = .black
+        textField.placeholder = date.toDateBeforeString()
+        textField.textColor = .white
+        
         
         underLine.backgroundColor = .white
 
         searchButton.setTitle("검색", for: .normal)
         searchButton.setTitleColor(.black, for: .normal)
         searchButton.backgroundColor = .white
+        searchButton.addTarget(self, action: #selector(searchbuttonTapped), for: .touchUpInside)
         
         tableView.backgroundColor = .black
     }
@@ -85,9 +91,34 @@ class MovieViewController: UIViewController {
             make.bottom.equalToSuperview()
         }
     }
+    
+    @objc
+    func searchbuttonTapped() {
+        print(#function)
+        
+        guard let text = textField.text else {
+            return
+        }
+        
+        guard let newDate = text.toDate() else {
+            return
+        }
+        
+        if date > newDate{
+            date = newDate
+        } else {
+            
+        }
+
+        print(date.toDateString())
+        
+        didChanged = false
+        fetchMovieData()
+        tableView.reloadData()
+    }
 }
 
-// MARK: Cell 생성시 매번 네트워크 통신이 이루어진다.
+// MARK: Cell 생성시 매번 네트워크 통신이 이루어진다. 불필요한 리소스가 증가한다.
 //extension MovieViewController: UITableViewDelegate, UITableViewDataSource{
 //    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 //        return rank.count
@@ -116,6 +147,18 @@ class MovieViewController: UIViewController {
 //        return cell
 //    }
 //}
+
+// MARK: TextField 제약조건을 방법을 서치해봤습니다.
+extension MovieViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let currentText = textField.text as NSString? else { return false }
+        let updatedText = currentText.replacingCharacters(in: range, with: string)
+        guard Int(string) != nil || string.isEmpty else { return false }
+        guard updatedText.count <= 8 else { return false }
+
+        return true
+    }
+}
 
 
 extension MovieViewController: SkeletonTableViewDelegate, SkeletonTableViewDataSource {
@@ -155,10 +198,12 @@ extension MovieViewController {
     
     // MARK: 데이터를 다 불러온 후 UI 를 그려주기 위해서는 LoadingView 나 SkeletonView 를 사용하는 방법만 있는지 이외의 방법은 무엇인 궁금합니다.
     func fetchMovieData() {
-        
-        // Extension 속 static func toDateDayString() 사용
-        let url = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=b4126bd85d21685991482cd29b102fd8&targetDt=\(Date.toDateDayString())"
-        
+        rank = []
+        movieNm = []
+        openDt = []
+        // Extension 속 func toDateDayString() 사용
+        let url = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=b4126bd85d21685991482cd29b102fd8&targetDt=\(didChanged ? date.toDateBeforeString() : date.toDateString())"
+        print(url)
         AF.request(url, method: .get).responseDecodable(of: BoxOffice.self) { response in
             
             switch response.result {
