@@ -28,4 +28,6 @@ struct lotto: Decodable {
     let drwtNo5: Int
     let drwtNo6: Int
     
+    let bnusNo: Int
+    
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import SkeletonView
 
 class MovieTableViewCell: UITableViewCell {
 
@@ -17,6 +18,11 @@ class MovieTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        self.isSkeletonable = true
+        self.contentView.isSkeletonable = true
+        self.dateLabel.isSkeletonable = true
+        self.movieLabel.isSkeletonable = true
+        self.rankingLabel.isSkeletonable = true
         configure()
         
         contentView.addSubview(rankingLabel)
@@ -43,7 +49,6 @@ class MovieTableViewCell: UITableViewCell {
             make.centerY.equalToSuperview()
         }
         
-
         
 
     }

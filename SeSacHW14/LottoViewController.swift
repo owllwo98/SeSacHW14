@@ -37,7 +37,11 @@ class LottoViewController: UIViewController {
     
     let drwtNoList: [UILabel] = [UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel()]
     
+    let plusImageView: UIImageView = UIImageView()
+    
     let drwNoPickerView: UIPickerView = UIPickerView()
+    
+    let bnusNo: UILabel = UILabel()
     
     
     override func viewDidLoad() {
@@ -60,7 +64,9 @@ class LottoViewController: UIViewController {
     
     func configure() {
         lottoTextField.backgroundColor = .white
-        lottoTextField.layer.borderColor = UIColor.black.cgColor
+        lottoTextField.layer.borderWidth = 1
+        lottoTextField.layer.borderColor = UIColor.lightGray.cgColor
+        lottoTextField.textAlignment = .center
         lottoTextField.addTarget(self, action: #selector(textFieldTapped), for: .editingDidBegin)
         
         lottoDateLabel.text = "2020-05-30 추첨"
@@ -97,12 +103,23 @@ class LottoViewController: UIViewController {
         drwtNoList[4].backgroundColor = .red
         drwtNoList[5].backgroundColor = .lightGray
         
-   
+        plusImageView.image = UIImage(systemName: "plus")
+        plusImageView.tintColor = .black
+        
+        bnusNo.textColor = .white
+        bnusNo.clipsToBounds = true
+        bnusNo.textAlignment = .center
+        bnusNo.backgroundColor = .lightGray
+        
+        DispatchQueue.main.async {
+            self.bnusNo.layer.cornerRadius = self.bnusNo.frame.width / 2
+        }
+        
         drwNoPickerView.isHidden = true
     }
     
     func configureUI() {
-        [lottoTextField, infoLabel, lottoDateLabel, separatorLine, drwNoLabel, subDrwNoLabel, drwNoPickerView].forEach {
+        [lottoTextField, infoLabel, lottoDateLabel, separatorLine, drwNoLabel, subDrwNoLabel, plusImageView, bnusNo, drwNoPickerView].forEach {
             view.addSubview($0)
         }
         
@@ -162,6 +179,19 @@ class LottoViewController: UIViewController {
             }
         }
         
+        plusImageView.snp.makeConstraints { make in
+            make.centerY.equalTo(drwtNoList[5].snp.centerY)
+            make.leading.equalTo(drwtNoList[5].snp.trailing).inset(-16)
+        }
+        
+        bnusNo.snp.makeConstraints { make in
+            make.top.equalTo(drwNoLabel.snp.bottom).inset(-16)
+            make.trailing.equalToSuperview().inset(16)
+            make.size.equalTo(40)
+        }
+        
+        
+        
         
         drwNoPickerView.snp.makeConstraints { make in
             make.bottom.equalTo(view).inset(4)
@@ -193,6 +223,7 @@ class LottoViewController: UIViewController {
                 for i in 0...5 {
                     self.drwtNoList[i].text = self.drwNumberList[i].formatted()
                 }
+                self.bnusNo.text = value.bnusNo.formatted()
             case .failure(let error):
                 print(error)
             }
@@ -236,6 +267,7 @@ extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
                 }
                 self.drwNoLabel.text = value.drwNo.formatted() + "회"
                 self.lottoDateLabel.text = value.drwNoDate + " 추첨"
+                self.bnusNo.text = value.bnusNo.formatted()
             case .failure(let error):
                 print(error)
             }
