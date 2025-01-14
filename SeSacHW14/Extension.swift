@@ -31,3 +31,50 @@ struct lotto: Decodable {
     let bnusNo: Int
     
 }
+
+extension Date {
+    func toDateHourString() -> String {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(abbreviation: "KST")
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "HH:mm a"
+        let dateString = formatter.string(from: self)
+        return dateString
+    }
+    
+    static func toDateDayString() -> String {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(abbreviation: "KST")
+        formatter.dateFormat = "yyyyMMdd"
+        let yesterDay = Calendar.current.date(byAdding: .day, value: -1, to: Date())
+        let dateString = formatter.string(from: yesterDay!)
+        return dateString
+    }
+    
+    func toDayString() -> String {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(abbreviation: "KST")
+        formatter.dateFormat = "dd"
+        let dateString = formatter.string(from: self)
+        return dateString
+    }
+}
+
+extension String {
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        formatter.timeZone = TimeZone(identifier: "KST")
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter
+    }()
+    
+    func toDate() -> Date? {
+        let dateFormatter = Self.dateFormatter
+        guard let date = dateFormatter.date(from: self) else {
+            return nil
+        }
+        return date
+    }
+}
+

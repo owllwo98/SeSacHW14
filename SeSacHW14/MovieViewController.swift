@@ -22,6 +22,8 @@ class MovieViewController: UIViewController {
     var movieNm: [String] = []
     var openDt: [String] = []
     
+    let date: Date = Date()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
@@ -33,7 +35,6 @@ class MovieViewController: UIViewController {
         tableView.delegate = self
         tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: "MovieTableViewCell")
         
-    
         configure()
         configureUI()
         configureTextField(textField)
@@ -86,6 +87,7 @@ class MovieViewController: UIViewController {
     }
 }
 
+// MARK: Cell 생성시 매번 네트워크 통신이 이루어진다.
 //extension MovieViewController: UITableViewDelegate, UITableViewDataSource{
 //    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 //        return rank.count
@@ -129,7 +131,6 @@ extension MovieViewController: SkeletonTableViewDelegate, SkeletonTableViewDataS
         cell.movieLabel.text = movieNm[indexPath.row]
         cell.dateLabel.text = openDt[indexPath.row]
         
-//        print(rank.count)
         return cell
     }
     func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
@@ -141,7 +142,7 @@ extension MovieViewController: SkeletonTableViewDelegate, SkeletonTableViewDataS
       }
       
       func collectionSkeletonView(_ skeletonView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        UITableView.automaticNumberOfSkeletonRows // <- 편리하게 사용 가능
+        UITableView.automaticNumberOfSkeletonRows
       }
       
       func numSections(in collectionSkeletonView: UITableView) -> Int {
@@ -152,9 +153,11 @@ extension MovieViewController: SkeletonTableViewDelegate, SkeletonTableViewDataS
 
 extension MovieViewController {
     
-    // MARK: 해당 메서드를 사용해서 데이터를 다 불러온 후 UI 를 그려주기 위해서는 LoadingView 나 SkeletonView 를 사용하는게 정답인지 궁금합니다.
+    // MARK: 데이터를 다 불러온 후 UI 를 그려주기 위해서는 LoadingView 나 SkeletonView 를 사용하는 방법만 있는지 이외의 방법은 무엇인 궁금합니다.
     func fetchMovieData() {
-        let url = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=b4126bd85d21685991482cd29b102fd8&targetDt=20250113"
+        
+        // Extension 속 static func toDateDayString() 사용
+        let url = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=b4126bd85d21685991482cd29b102fd8&targetDt=\(Date.toDateDayString())"
         
         AF.request(url, method: .get).responseDecodable(of: BoxOffice.self) { response in
             
